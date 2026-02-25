@@ -144,6 +144,6 @@ MIT — free to use, modify, and distribute.
 
 <div align="center">
 
-crafted with care by **Amr Alaa**
+crafted with care by **Amr Alaa** & AI
 
 </div>
