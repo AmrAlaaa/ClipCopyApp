@@ -43,6 +43,18 @@ That's it. The file runs entirely on the client side.
 
 ---
 
+## 🗂️ Use Cases
+
+- Terminal commands you use often but never remember
+- API endpoint URLs or cURL snippets
+- Boilerplate code blocks
+- Frequently used email responses or phrases
+- SSH aliases, connection strings, credentials (local only)
+- Git commands and config snippets
+- Anything you'd otherwise keep in a sticky note
+
+---
+
 ## 🧩 Features
 
 | Feature | Description |
@@ -86,18 +98,6 @@ All data is stored in your browser's **`localStorage`**. This means:
 - ✅ No data ever leaves your device
 - ⚠️ Data is tied to the specific browser and profile you use
 - ⚠️ Clearing browser site data will erase entries
-
----
-
-## 🗂️ Use Cases
-
-- Terminal commands you use often but never remember
-- API endpoint URLs or cURL snippets
-- Boilerplate code blocks
-- Frequently used email responses or phrases
-- SSH aliases, connection strings, credentials (local only)
-- Git commands and config snippets
-- Anything you'd otherwise keep in a sticky note
 
 ---
 
