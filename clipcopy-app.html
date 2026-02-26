@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClipCopy App</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d0f14'/%3E%3Crect x='1' y='1' width='30' height='30' rx='7.5' fill='none' stroke='%235b8fff' stroke-width='1' stroke-opacity='0.3'/%3E%3Crect x='12' y='4' width='8' height='5' rx='1.5' fill='%235b8fff'/%3E%3Crect x='12' y='4' width='8' height='5' rx='1.5' fill='url(%23g)'/%3E%3Cpath d='M20 6h3a2.5 2.5 0 012.5 2.5v17A2.5 2.5 0 0123 28H9a2.5 2.5 0 01-2.5-2.5v-17A2.5 2.5 0 019 6h3' stroke='%235b8fff' stroke-width='1.8' stroke-linecap='round' fill='none'/%3E%3Cpath d='M11 16h10M11 20h7' stroke='%23a78bfa' stroke-width='1.8' stroke-linecap='round'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='12' y1='4' x2='20' y2='9' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%235b8fff'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
+<meta name="description" content="Your personal text and command vault. Save snippets, copy in one click.">
+<meta name="theme-color" content="#0d0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ClipCopy">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%235b8fff'/%3E%3Cstop offset='100%25' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Crect x='10' y='3' width='12' height='6' rx='2' fill='white'/%3E%3Crect x='7' y='7' width='18' height='22' rx='3' fill='rgba(255,255,255,0.15)' stroke='white' stroke-width='1.5'/%3E%3Cline x1='11' y1='16' x2='21' y2='16' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='11' y1='21' x2='18' y2='21' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1034,6 +1041,135 @@
   });
 
   load();
+
+  // ---- PWA SETUP ----
+  (function setupPWA() {
+    // 1. Draw icon on canvas → base64 PNG
+    function makeIcon(size) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      const ctx = c.getContext('2d');
+      const r = size * 0.25;
+      // rounded rect background
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#5b8fff');
+      grad.addColorStop(1, '#a78bfa');
+      ctx.beginPath();
+      ctx.moveTo(r, 0); ctx.lineTo(size - r, 0);
+      ctx.quadraticCurveTo(size, 0, size, r);
+      ctx.lineTo(size, size - r);
+      ctx.quadraticCurveTo(size, size, size - r, size);
+      ctx.lineTo(r, size); ctx.quadraticCurveTo(0, size, 0, size - r);
+      ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      // clipboard body
+      const m = size * 0.22, bw = size - m * 2, bh = size * 0.69;
+      const by = size * 0.22;
+      const br = size * 0.09;
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = size * 0.05;
+      ctx.beginPath();
+      ctx.moveTo(m + br, by); ctx.lineTo(m + bw - br, by);
+      ctx.quadraticCurveTo(m + bw, by, m + bw, by + br);
+      ctx.lineTo(m + bw, by + bh - br);
+      ctx.quadraticCurveTo(m + bw, by + bh, m + bw - br, by + bh);
+      ctx.lineTo(m + br, by + bh); ctx.quadraticCurveTo(m, by + bh, m, by + bh - br);
+      ctx.lineTo(m, by + br); ctx.quadraticCurveTo(m, by, m + br, by);
+      ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      // clip tab
+      const tw = size * 0.38, th = size * 0.18;
+      const tx = (size - tw) / 2, ty = size * 0.09;
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.beginPath();
+      ctx.moveTo(tx + th/2, ty); ctx.lineTo(tx + tw - th/2, ty);
+      ctx.quadraticCurveTo(tx + tw, ty, tx + tw, ty + th/2);
+      ctx.lineTo(tx + tw, ty + th - th/2);
+      ctx.quadraticCurveTo(tx + tw, ty + th, tx + tw - th/2, ty + th);
+      ctx.lineTo(tx + th/2, ty + th); ctx.quadraticCurveTo(tx, ty + th, tx, ty + th - th/2);
+      ctx.lineTo(tx, ty + th/2); ctx.quadraticCurveTo(tx, ty, tx + th/2, ty);
+      ctx.closePath();
+      ctx.fill();
+      // lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = size * 0.055;
+      ctx.lineCap = 'round';
+      const lx1 = m + size * 0.12, lx2 = m + bw - size * 0.12;
+      ctx.beginPath(); ctx.moveTo(lx1, size * 0.56); ctx.lineTo(lx2, size * 0.56); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(lx1, size * 0.69); ctx.lineTo(lx1 + (lx2-lx1)*0.55, size * 0.69); ctx.stroke();
+      return c.toDataURL('image/png');
+    }
+
+    const icon192 = makeIcon(192);
+    const icon512 = makeIcon(512);
+
+    // 2. Build manifest blob
+    const manifest = {
+      name: 'ClipCopy App',
+      short_name: 'ClipCopy',
+      description: 'Your personal text and command vault.',
+      start_url: '.',
+      display: 'standalone',
+      background_color: '#0d0f14',
+      theme_color: '#0d0f14',
+      orientation: 'portrait-primary',
+      icons: [
+        { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+      ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = manifestURL;
+    document.head.appendChild(manifestLink);
+
+    // Apple touch icon
+    const appleLink = document.createElement('link');
+    appleLink.rel = 'apple-touch-icon';
+    appleLink.href = icon192;
+    document.head.appendChild(appleLink);
+
+    // 3. Service worker via blob for offline support
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE = 'clipcopy-v1';
+        const ASSETS = [self.location.href.replace(/\\/sw-blob.*/, '')];
+
+        self.addEventListener('install', e => {
+          e.waitUntil(
+            caches.open(CACHE).then(cache =>
+              fetch(location.href).then(r => cache.put('clipcopy-app', r)).catch(() => {})
+            )
+          );
+          self.skipWaiting();
+        });
+
+        self.addEventListener('activate', e => {
+          e.waitUntil(
+            caches.keys().then(keys =>
+              Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+            )
+          );
+          self.clients.claim();
+        });
+
+        self.addEventListener('fetch', e => {
+          e.respondWith(
+            fetch(e.request).catch(() => caches.match('clipcopy-app'))
+          );
+        });
+      `;
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      const swURL = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swURL, { scope: './' })
+        .catch(() => {}); // silently fail if blocked (e.g. file:// protocol)
+    }
+  })();
 </script>
 </body>
 </html>
